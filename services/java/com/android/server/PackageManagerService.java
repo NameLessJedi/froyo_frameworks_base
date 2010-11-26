@@ -5120,9 +5120,15 @@ class PackageManagerService extends IPackageManager.Stub {
     }
 
     private InstallArgs createInstallArgs(InstallParams params) {
-        if (installOnSd(params.flags)) {
+        boolean ExtInstall = (getInstallLocation() == PackageHelper.APP_INSTALL_SDEXT);
+        // Prefer sd-ext if user says so
+        if (ExtInstall) {
+            return new SdExtInstallArgs(params);
+        } else if (installOnSd(params.flags)) {
             return new SdInstallArgs(params);
         } else if (installOnSdExt(params.flags)) {
+            // Very unlikely for an app to ask to be installed on sd-ext
+            // but who knows?
             return new SdExtInstallArgs(params);
         } else {
             return new FileInstallArgs(params);
@@ -5130,9 +5136,15 @@ class PackageManagerService extends IPackageManager.Stub {
     }
 
     private InstallArgs createInstallArgs(int flags, String fullCodePath, String fullResourcePath) {
-        if (installOnSd(flags)) {
+        boolean ExtInstall = (getInstallLocation() == PackageHelper.APP_INSTALL_SDEXT);
+        // Prefer sd-ext if user says so
+        if (ExtInstall) {
+            return new SdExtInstallArgs(fullCodePath, fullResourcePath);
+        } else if (installOnSd(flags)) {
             return new SdInstallArgs(fullCodePath, fullResourcePath);
         } else if (installOnSdExt(flags)) {
+            // Very unlikely for an app to ask to be installed on sd-ext
+            // but who knows?
             return new SdExtInstallArgs(fullCodePath, fullResourcePath);
         } else {
             return new FileInstallArgs(fullCodePath, fullResourcePath);
@@ -5141,10 +5153,16 @@ class PackageManagerService extends IPackageManager.Stub {
 
     private InstallArgs createInstallArgs(Uri packageURI, int flags,
             String pkgName) {
-        if (installOnSd(flags)) {
+        boolean ExtInstall = (getInstallLocation() == PackageHelper.APP_INSTALL_SDEXT);
+        // Prefer sd-ext if user says so
+        if (ExtInstall) {
+            return new SdExtInstallArgs(packageURI, pkgName);
+        } else if (installOnSd(flags)) {
             String cid = getNextCodePath(null, pkgName, "/" + SdInstallArgs.RES_FILE_NAME);
             return new SdInstallArgs(packageURI, cid);
         } else if (installOnSdExt(flags)) {
+            // Very unlikely for an app to ask to be installed on sd-ext
+            // but who knows?
             return new SdExtInstallArgs(packageURI, pkgName);
         } else {
             return new FileInstallArgs(packageURI, pkgName);
