@@ -137,10 +137,10 @@ public final class Pm {
             }
         } finally {
             if (validCommand == false) {
+                showUsage();
                 if (op != null) {
                     System.err.println("Error: unknown command '" + op + "'");
                 }
-                showUsage();
             }
         }
     }
